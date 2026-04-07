@@ -11,8 +11,7 @@ dist/
 build/
 
 # Data
-data/
-*.db
+data/*.db
 *.sqlite3
 
 # Env
