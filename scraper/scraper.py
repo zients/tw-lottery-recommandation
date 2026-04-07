@@ -1,54 +1,50 @@
 # scraper/scraper.py
+import json
 import requests
-from bs4 import BeautifulSoup
 
-HISTORY_URL = "https://www.taiwanlottery.com.tw/lotto/lotto539/history.aspx"
+API_URL = "https://www.pilio.idv.tw/Json_lto.asp"
 
 
-def parse_draws(html: str) -> list[tuple[str, list[int]]]:
-    """Parse draw history from Taiwan Lottery 539 history page HTML.
+def parse_draws(data: dict) -> list[tuple[str, list[int]]]:
+    """Parse draw records from pilio JSON response.
 
-    Each data row has 7 cells: draw_no | ROC_date | n1 | n2 | n3 | n4 | n5.
-    ROC dates look like "114/04/06"; year is converted to CE by adding 1911.
+    Expected item format:
+        {"date": "2007/01/01<br>(一)", "num": "09, 11, 27, 28, 38", "dex": "1"}
     """
-    soup = BeautifulSoup(html, "html.parser")
     draws = []
-    for row in soup.select("table tr"):
-        cells = row.find_all("td")
-        if len(cells) < 7:
-            continue
+    for item in data.get("lotto", []):
         try:
-            raw_date = cells[1].get_text(strip=True)
-            parts = raw_date.split("/")
-            if len(parts) != 3:
-                continue
-            year = int(parts[0]) + 1911
-            date = f"{year}-{parts[1]}-{parts[2]}"
-            numbers = [int(cells[i].get_text(strip=True)) for i in range(2, 7)]
-            if all(1 <= n <= 39 for n in numbers):
+            # "2007/01/01<br>(一)" → "2007-01-01"
+            raw_date = item["date"].split("<")[0].strip()
+            date = raw_date.replace("/", "-")
+
+            # "09, 11, 27, 28, 38" → [9, 11, 27, 28, 38]
+            numbers = [int(n.strip()) for n in item["num"].split(",")]
+            if len(numbers) == 5 and all(1 <= n <= 39 for n in numbers):
                 draws.append((date, numbers))
-        except (ValueError, IndexError):
+        except (KeyError, ValueError):
             continue
     return draws
 
 
-def fetch_draws(pages: int = 1) -> list[tuple[str, list[int]]]:
-    """Fetch draw history from the Taiwan Lottery website.
+def fetch_draws(pages: int = 10) -> list[tuple[str, list[int]]]:
+    """Fetch draw history from pilio API.
 
-    Args:
-        pages: Number of history pages to fetch.
-
-    Returns:
-        List of (date, numbers) tuples where date is YYYY-MM-DD and
-        numbers is a list of 5 integers in the range 1–39.
+    Each page returns 10 records; pagination uses the last dex value.
+    Ascending order (oldest first) with Ldesc=1.
     """
     all_draws = []
-    for page in range(1, pages + 1):
-        params = {"p": page} if page > 1 else {}
-        response = requests.get(HISTORY_URL, params=params, timeout=10)
-        response.encoding = "utf-8"
-        draws = parse_draws(response.text)
-        all_draws.extend(draws)
-        if not draws:
+    index = 0
+    for _ in range(pages):
+        response = requests.post(
+            API_URL,
+            params={"Lkind": "lto539", "Lindex": index, "Ldesc": 1},
+            timeout=10,
+        )
+        data = json.loads(response.text)
+        batch = parse_draws(data)
+        if not batch:
             break
+        all_draws.extend(batch)
+        index = int(data["lotto"][-1]["dex"])
     return all_draws
