@@ -30,6 +30,18 @@ def cold_numbers(draws: list[tuple], window: int = 30,
     )[:top]]
 
 
+def recommend_special(draws: list[tuple], special_range: tuple[int, int]) -> int:
+    """Pick the most frequent special ball (last element of each draw's numbers)."""
+    lo, hi = special_range
+    counts: dict[int, int] = {n: 0 for n in range(lo, hi + 1)}
+    for _, numbers in draws:
+        if numbers:
+            n = numbers[-1]
+            if n in counts:
+                counts[n] += 1
+    return max(counts, key=lambda n: counts[n])
+
+
 def recommend(draws: list[tuple], cfg: dict | None = None) -> list[list[int]]:
     """Generate 3 recommended combinations based on frequency and optional filters.
 

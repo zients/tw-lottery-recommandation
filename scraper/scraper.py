@@ -22,23 +22,25 @@ LOTTERY_CONFIG: dict[str, dict] = {
         "path": "Lotto649Result",
         "res_key": "lotto649Res",
         "num_field": "drawNumberSize",
-        "num_count": 6,
+        "num_count": 7,   # 6 regular + 1 special ball (stored as flat list, special is last)
         "num_range": (1, 49),
         "start": (2007, 1),
         "analyze_count": 6,
         "odd_range": (2, 4),
         "sum_range": (90, 200),
+        "special_range": (1, 49),
     },
     "638": {
         "path": "SuperLotto638Result",
         "res_key": "superLotto638Res",
         "num_field": "drawNumberSize",
-        "num_count": 7,   # 6 regular + 1 special (stored as flat list, special is last)
+        "num_count": 7,   # 6 regular + 1 special ball (stored as flat list, special is last)
         "num_range": (1, 38),
         "start": (2008, 1),
-        "analyze_count": 6,  # analyze only the 6 regular balls
+        "analyze_count": 6,
         "odd_range": (2, 4),
         "sum_range": (70, 165),
+        "special_range": (1, 8),
     },
     "3d": {
         "path": "3DResult",
