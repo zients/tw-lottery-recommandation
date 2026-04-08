@@ -17,7 +17,7 @@
 ## 安裝
 
 ```bash
-pip install -r requirements.txt
+uv sync
 ```
 
 ## 使用方式
@@ -25,14 +25,14 @@ pip install -r requirements.txt
 ### 更新資料
 
 ```bash
-python cli.py update --type 539              # DB 有資料則繼續，沒有則從最早期數開始
-python cli.py update --type 649 --from-month 2024-01  # 指定起始月份
+uv run lottery update --type 539              # DB 有資料則繼續，沒有則從最早期數開始
+uv run lottery update --type 649 --from-month 2024-01  # 指定起始月份
 ```
 
 ### 統計分析
 
 ```bash
-python cli.py stats --type 539
+uv run lottery stats --type 539
 ```
 
 輸出：
@@ -43,13 +43,19 @@ python cli.py stats --type 539
 ### 號碼推薦
 
 ```bash
-python cli.py recommend --type 638
+uv run lottery recommend --type 638
 ```
 
 輸出 3 組推薦號碼，依據：
 - 歷史頻率（取 Top 20 候選）
 - 奇偶比與總和範圍過濾（539 / 649 / 638）
 - 638 附帶特別號推薦
+
+### 執行測試
+
+```bash
+uv run pytest
+```
 
 ## License
 
