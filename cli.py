@@ -6,6 +6,8 @@ from rich.table import Table
 from data.db import init_db, insert_draw, get_all_draws
 from scraper.scraper import fetch_draws, LOTTERY_CONFIG
 from analyzer.analyzer import frequency, hot_numbers, cold_numbers, recommend, recommend_special
+from ml.predict import has_model, predict as ml_predict
+from ml.train import train as ml_train
 
 DB_PATH = os.environ.get("LOTTERY_DB", "data/lottery.db")
 console = Console()
@@ -76,20 +78,53 @@ def cmd_stats(lottery_type: str = "539") -> None:
 def cmd_recommend(lottery_type: str = "539") -> None:
     draws = get_all_draws(DB_PATH, lottery_type)
     if not draws:
-        console.print("[red]No data. Run: python cli.py update[/red]")
+        console.print("[red]No data. Run: lottery update[/red]")
         return
     cfg = LOTTERY_CONFIG[lottery_type]
     special_range = cfg.get("special_range")
     draw_list = [(d, nums[:cfg["analyze_count"]]) for d, nums in draws]
-    combos = recommend(draw_list, cfg)
+
+    if has_model(lottery_type):
+        try:
+            combos = ml_predict(
+                draws, lottery_type,
+                num_range=cfg["num_range"],
+                analyze_count=cfg["analyze_count"],
+                pick=cfg["analyze_count"],
+            )
+            method = "ML"
+        except ValueError:
+            combos = recommend(draw_list, cfg)
+            method = "頻率"
+    else:
+        combos = recommend(draw_list, cfg)
+        method = "頻率"
+
     special = recommend_special(draws, special_range) if special_range else None
-    console.print(f"\n[bold green]{LOTTERY_TYPES[lottery_type]} 推薦號碼：[/bold green]")
+    console.print(f"\n[bold green]{LOTTERY_TYPES[lottery_type]} 推薦號碼（{method}）：[/bold green]")
     for i, combo in enumerate(combos, 1):
         nums = "  ".join(str(n) for n in combo)
         line = f"  組合 {i}：{nums}"
         if special is not None:
             line += f"  ＋特別號 {special}"
         console.print(line)
+
+
+def cmd_train(lottery_type: str = "539", epochs: int = 100) -> None:
+    draws = get_all_draws(DB_PATH, lottery_type)
+    if not draws:
+        console.print("[red]No data. Run: lottery update[/red]")
+        return
+    cfg = LOTTERY_CONFIG[lottery_type]
+    console.print(f"[bold]訓練 {LOTTERY_TYPES[lottery_type]} Transformer（{epochs} epochs）...[/bold]")
+    ml_train(
+        draws,
+        lottery_type=lottery_type,
+        num_range=cfg["num_range"],
+        analyze_count=cfg["analyze_count"],
+        pick=cfg["analyze_count"],
+        epochs=epochs,
+    )
 
 
 def main():
@@ -107,14 +142,20 @@ def main():
     stats_p = subparsers.add_parser("stats", help="查看統計")
     stats_p.add_argument("--type", type=str, default="539", choices=type_choices, help=type_help)
 
-    rec_p = subparsers.add_parser("recommend", help="產生推薦號碼")
+    rec_p = subparsers.add_parser("recommend", help="產生推薦號碼（有 ML 模型則用 ML）")
     rec_p.add_argument("--type", type=str, default="539", choices=type_choices, help=type_help)
+
+    train_p = subparsers.add_parser("train", help="訓練 ML 預測模型")
+    train_p.add_argument("--type", type=str, default="539", choices=type_choices, help=type_help)
+    train_p.add_argument("--epochs", type=int, default=100, help="訓練 epochs（預設 100）")
 
     args = parser.parse_args()
     if args.command == "update":
         cmd_update(start_month=args.from_month, lottery_type=args.type)
     elif args.command == "stats":
         cmd_stats(lottery_type=args.type)
+    elif args.command == "train":
+        cmd_train(lottery_type=args.type, epochs=args.epochs)
     elif args.command == "recommend":
         cmd_recommend(lottery_type=args.type)
     else:
