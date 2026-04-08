@@ -44,7 +44,7 @@ LOTTERY_CONFIG: dict[str, dict] = {
     "3d": {
         "path": "3DResult",
         "res_key": "lotto3DRes",
-        "num_field": "drawNumberSize",
+        "num_field": "drawNumberAppear",
         "num_count": 3,
         "num_range": (0, 9),
         "start": (2007, 1),
@@ -55,7 +55,7 @@ LOTTERY_CONFIG: dict[str, dict] = {
     "4d": {
         "path": "4DResult",
         "res_key": "lotto4DRes",
-        "num_field": "drawNumberSize",
+        "num_field": "drawNumberAppear",
         "num_count": 4,
         "num_range": (0, 9),
         "start": (2007, 1),
