@@ -5,7 +5,7 @@ from rich.console import Console
 from rich.table import Table
 from data.db import init_db, insert_draw, get_all_draws
 from scraper.scraper import fetch_draws, LOTTERY_CONFIG
-from analyzer.analyzer import frequency, hot_numbers, cold_numbers, recommend
+from analyzer.analyzer import frequency, hot_numbers, cold_numbers, recommend, recommend_special
 
 DB_PATH = os.environ.get("LOTTERY_DB", "data/lottery.db")
 console = Console()
@@ -70,12 +70,17 @@ def cmd_recommend(lottery_type: str = "539") -> None:
         console.print("[red]No data. Run: python cli.py update[/red]")
         return
     cfg = LOTTERY_CONFIG[lottery_type]
+    special_range = cfg.get("special_range")
     draw_list = [(d, nums[:cfg["analyze_count"]]) for d, nums in draws]
     combos = recommend(draw_list, cfg)
+    special = recommend_special(draws, special_range) if special_range else None
     console.print(f"\n[bold green]{LOTTERY_TYPES[lottery_type]} 推薦號碼：[/bold green]")
     for i, combo in enumerate(combos, 1):
         nums = "  ".join(str(n) for n in combo)
-        console.print(f"  組合 {i}：{nums}")
+        line = f"  組合 {i}：{nums}"
+        if special is not None:
+            line += f"  ＋特別號 {special}"
+        console.print(line)
 
 
 def main():
