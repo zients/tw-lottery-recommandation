@@ -22,10 +22,10 @@ LOTTERY_CONFIG: dict[str, dict] = {
         "path": "Lotto649Result",
         "res_key": "lotto649Res",
         "num_field": "drawNumberSize",
-        "num_count": 6,
+        "num_count": 7,   # 6 regular + 1 special ball
         "num_range": (1, 49),
         "start": (2007, 1),
-        "analyze_count": 6,
+        "analyze_count": 6,  # analyze only the 6 regular balls
         "odd_range": (2, 4),
         "sum_range": (90, 200),
     },
