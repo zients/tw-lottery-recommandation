@@ -25,7 +25,7 @@ pip install -r requirements.txt
 ### 更新資料
 
 ```bash
-python cli.py update --type 539              # 從最新資料繼續抓
+python cli.py update --type 539              # DB 有資料則繼續，沒有則從最早期數開始
 python cli.py update --type 649 --from-month 2024-01  # 指定起始月份
 ```
 
