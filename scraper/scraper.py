@@ -63,28 +63,6 @@ LOTTERY_CONFIG: dict[str, dict] = {
         "odd_range": None,
         "sum_range": None,
     },
-    "49m6": {
-        "path": "49M6Result",
-        "res_key": "m649Res",
-        "num_field": "drawNumberSize",
-        "num_count": 6,
-        "num_range": (1, 49),
-        "start": (2007, 1),
-        "analyze_count": 6,
-        "odd_range": (2, 4),
-        "sum_range": (90, 200),
-    },
-    "39m5": {
-        "path": "39M5Result",
-        "res_key": "m539Res",
-        "num_field": "drawNumberSize",
-        "num_count": 5,
-        "num_range": (1, 39),
-        "start": (2011, 1),
-        "analyze_count": 5,
-        "odd_range": (2, 3),
-        "sum_range": (80, 120),
-    },
 }
 
 
