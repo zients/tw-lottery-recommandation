@@ -1,7 +1,7 @@
 [project]
-name = "lottery-539"
+name = "tw-lottery-recommandation"
 version = "0.1.0"
-description = "Add your description here"
+description = "台灣彩券開獎資料分析與號碼推薦工具"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
