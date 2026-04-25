@@ -50,9 +50,13 @@ class LotteryDataset(Dataset):
 
 def is_oos_split(
     draws: list[tuple[str, list[int]]],
-    cutoff_year: int = 2024,
+    oos_ratio: float = 0.2,
 ) -> tuple[list, list]:
-    """Split draws into in-sample (IS) and out-of-sample (OOS)."""
-    is_draws = [(d, nums) for d, nums in draws if int(d[:4]) < cutoff_year]
-    oos_draws = [(d, nums) for d, nums in draws if int(d[:4]) >= cutoff_year]
-    return is_draws, oos_draws
+    """Split chronologically-sorted draws into in-sample (IS, earlier) and
+    out-of-sample (OOS, latest `oos_ratio` fraction)."""
+    if not 0.0 <= oos_ratio < 1.0:
+        raise ValueError(f"oos_ratio must be in [0.0, 1.0), got {oos_ratio}")
+    oos_size = int(len(draws) * oos_ratio)
+    if oos_size == 0:
+        return list(draws), []
+    return list(draws[:-oos_size]), list(draws[-oos_size:])

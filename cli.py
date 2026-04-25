@@ -128,7 +128,7 @@ def cmd_train(lottery_type: str = "539", epochs: int = 100) -> None:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="台灣539分析工具")
+    parser = argparse.ArgumentParser(description="台灣彩券分析與推薦工具（支援 539 / 649 / 638 / 3D / 4D）")
     subparsers = parser.add_subparsers(dest="command")
 
     type_choices = list(LOTTERY_TYPES.keys())
