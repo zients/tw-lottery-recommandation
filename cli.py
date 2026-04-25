@@ -93,7 +93,11 @@ def cmd_recommend(lottery_type: str = "539") -> None:
                 pick=cfg["analyze_count"],
             )
             method = "ML"
-        except ValueError:
+        except Exception as e:
+            # ML can fail for many reasons (corrupt checkpoint, shape mismatch
+            # after config change, missing torch, OOM, etc). Fall back rather
+            # than crashing — frequency-based recommend is always safe.
+            console.print(f"[yellow]ML 預測失敗，改用頻率法：{type(e).__name__}: {e}[/yellow]")
             combos = recommend(draw_list, cfg)
             method = "頻率"
     else:

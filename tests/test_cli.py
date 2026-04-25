@@ -59,3 +59,22 @@ def test_stats_accepts_lottery_type(seeded_db):
 def test_recommend_accepts_lottery_type(seeded_db):
     with patch("cli.DB_PATH", seeded_db):
         cmd_recommend(lottery_type="649")
+
+
+def test_recommend_falls_back_when_ml_raises_runtime_error(seeded_db, capsys):
+    # Simulate a corrupt-checkpoint / shape-mismatch style failure (not ValueError)
+    with patch("cli.DB_PATH", seeded_db), \
+         patch("cli.has_model", return_value=True), \
+         patch("cli.ml_predict", side_effect=RuntimeError("boom")):
+        cmd_recommend()
+    out = capsys.readouterr().out
+    assert "ML 預測失敗" in out
+    assert "頻率" in out
+
+
+def test_recommend_falls_back_when_ml_raises_value_error(seeded_db):
+    # Existing behavior (ValueError) must still work after broadening to Exception
+    with patch("cli.DB_PATH", seeded_db), \
+         patch("cli.has_model", return_value=True), \
+         patch("cli.ml_predict", side_effect=ValueError("not enough data")):
+        cmd_recommend()  # should not raise
