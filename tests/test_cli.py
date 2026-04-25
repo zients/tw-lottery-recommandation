@@ -78,3 +78,42 @@ def test_recommend_falls_back_when_ml_raises_value_error(seeded_db):
          patch("cli.has_model", return_value=True), \
          patch("cli.ml_predict", side_effect=ValueError("not enough data")):
         cmd_recommend()  # should not raise
+
+
+# --- 638 (威力彩) special ball path -------------------------------------
+
+@pytest.fixture
+def seeded_638_db(db):
+    # 638 stores 6 regular + 1 special (range 1-8) as a flat 7-element list
+    for i in range(40):  # >30 so stats has data for hot/cold window
+        regulars = [
+            ((i + j) % 38) + 1 for j in range(6)
+        ]
+        special = (i % 8) + 1
+        insert_draw(db, f"2024-01-{(i % 28) + 1:02d}", regulars + [special],
+                    lottery_type="638")
+    return db
+
+
+def test_stats_638_runs_and_includes_special_table(seeded_638_db, capsys):
+    with patch("cli.DB_PATH", seeded_638_db):
+        cmd_stats(lottery_type="638")
+    out = capsys.readouterr().out
+    assert "威力彩" in out
+    assert "特別號" in out  # special-ball table title
+
+
+def test_recommend_638_outputs_special_number(seeded_638_db, capsys):
+    with patch("cli.DB_PATH", seeded_638_db):
+        cmd_recommend(lottery_type="638")
+    out = capsys.readouterr().out
+    assert "威力彩" in out
+    assert "特別號" in out  # "+特別號 X" suffix on each combo
+
+
+def test_recommend_539_does_not_output_special(seeded_db, capsys):
+    # 539 has no special_range, so output should not mention 特別號
+    with patch("cli.DB_PATH", seeded_db):
+        cmd_recommend(lottery_type="539")
+    out = capsys.readouterr().out
+    assert "特別號" not in out
