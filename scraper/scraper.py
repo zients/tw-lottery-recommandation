@@ -1,9 +1,12 @@
 # scraper/scraper.py
+import time
 import requests
 from datetime import date
 
 API_BASE = "https://api.taiwanlottery.com/TLCAPIWeB/Lottery"
 HEADERS = {"Accept": "application/json", "User-Agent": "Mozilla/5.0"}
+MAX_RETRIES = 3
+RETRY_BACKOFF = 1.0  # seconds, doubled each retry
 
 # Config per lottery type: API path, response list key, numbers field, expected count, valid range, start date
 LOTTERY_CONFIG: dict[str, dict] = {
@@ -82,8 +85,41 @@ def parse_draws(data: dict, lottery_type: str = "539") -> list[tuple[str, list[i
     return draws
 
 
+def _fetch_month(month_str: str, cfg: dict, lottery_type: str) -> list[tuple[str, list[int]]]:
+    """Fetch one month with retries. Returns [] if all retries fail."""
+    last_err: Exception | None = None
+    for attempt in range(MAX_RETRIES):
+        try:
+            response = requests.get(
+                f"{API_BASE}/{cfg['path']}",
+                params={
+                    "period": "",
+                    "month": month_str,
+                    "endMonth": month_str,
+                    "pageNum": 1,
+                    "pageSize": 31,
+                },
+                headers=HEADERS,
+                timeout=10,
+            )
+            response.raise_for_status()
+            data = response.json().get("content", {})
+            return parse_draws(data, lottery_type)
+        except (requests.RequestException, ValueError) as e:
+            last_err = e
+            if attempt < MAX_RETRIES - 1:
+                time.sleep(RETRY_BACKOFF * (2**attempt))
+    print(f"[warn] failed to fetch {month_str} after {MAX_RETRIES} attempts: {last_err}")
+    return []
+
+
 def fetch_draws(start_month: str | None = None, lottery_type: str = "539") -> list[tuple[str, list[int]]]:
     """Fetch all draws for a given lottery type, month by month.
+
+    On per-month failure, retries up to MAX_RETRIES times with exponential
+    backoff. If a month still fails, prints a warning and continues — partial
+    results are returned so already-fetched draws aren't lost. Re-running
+    update will resume from the latest stored date.
 
     Args:
         start_month: "YYYY-MM" to start from. Defaults to the type's earliest date.
@@ -103,20 +139,7 @@ def fetch_draws(start_month: str | None = None, lottery_type: str = "539") -> li
 
     while (year, month) <= (today.year, today.month):
         month_str = f"{year}-{month:02d}"
-        response = requests.get(
-            f"{API_BASE}/{cfg['path']}",
-            params={
-                "period": "",
-                "month": month_str,
-                "endMonth": month_str,
-                "pageNum": 1,
-                "pageSize": 31,
-            },
-            headers=HEADERS,
-            timeout=10,
-        )
-        data = response.json().get("content", {})
-        batch = parse_draws(data, lottery_type)
+        batch = _fetch_month(month_str, cfg, lottery_type)
         all_draws.extend(sorted(batch))
 
         month += 1
