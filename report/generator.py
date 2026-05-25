@@ -13,26 +13,25 @@ _ACCENT: dict[str, str] = {
 
 _CSS = """\
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans TC',sans-serif;background:#faf8f4;color:#111;min-height:100vh}
-header{background:#111;color:#fff;padding:2.8rem 1.5rem;text-align:center}
-header h1{font-size:1.75rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase}
-header .date-stamp{display:inline-block;margin-top:1rem;border:1px solid rgba(255,255,255,.25);padding:.3rem 1rem;font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.5)}
-main{max-width:720px;margin:2.5rem auto;padding:0 1.25rem;display:flex;flex-direction:column;gap:1rem}
-.card{background:#fff;border-radius:6px;border-left:5px solid #ccc;padding:1.4rem 1.4rem 1.4rem 1.25rem;box-shadow:0 1px 3px rgba(0,0,0,.06)}
-.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem}
-.card-title{font-size:1rem;font-weight:700;letter-spacing:.01em}
-.badge{font-size:.62rem;font-weight:700;padding:.18rem .55rem;border-radius:3px;letter-spacing:.08em;text-transform:uppercase}
-.badge-ml{background:#111;color:#fff}
-.badge-freq{background:#e8e8e8;color:#555}
-.combo{display:flex;align-items:center;gap:.38rem;margin-bottom:.75rem;flex-wrap:wrap}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans TC',sans-serif;background:#f5f5f0;color:#111;min-height:100vh}
+header{background:#111;color:#fff;padding:2.5rem 1.5rem 2rem;text-align:center}
+header h1{font-size:1.5rem;font-weight:900;letter-spacing:.18em;text-transform:uppercase}
+header .date-stamp{margin-top:.75rem;font-size:.72rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+main{max-width:680px;margin:2rem auto;padding:0 1.25rem;display:flex;flex-direction:column;gap:.75rem}
+.card{background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.card-band{padding:.85rem 1.25rem;display:flex;align-items:center;justify-content:space-between}
+.card-band-title{color:#fff;font-size:.95rem;font-weight:700;letter-spacing:.02em}
+.card-band-badge{color:rgba(255,255,255,.65);font-size:.62rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+.card-body{padding:1.1rem 1.25rem 1.25rem}
+.combo{display:flex;align-items:center;gap:.35rem;margin-bottom:.65rem;flex-wrap:wrap}
 .combo:last-child{margin-bottom:0}
-.combo-label{font-size:.68rem;color:#ccc;width:1.4rem;flex-shrink:0;text-align:right;font-variant-numeric:tabular-nums}
-.ball{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.86rem;flex-shrink:0;color:#fff}
-.ball-n,.ball-d{background:#aaa}
-.ball-s{background:#faf8f4;border:2.5px solid #c9a84c;color:#c9a84c;font-weight:800}
-.ball-d{font-size:.92rem}
-.plus{color:#ddd;margin:0 .12rem;font-size:.9rem}
-footer{text-align:center;padding:3rem 1.5rem;color:#ccc;font-size:.74rem;line-height:2;border-top:1px solid #ede9e3;margin-top:1.5rem}
+.combo-label{font-size:.65rem;color:#c8c8c8;width:1.2rem;flex-shrink:0;text-align:center;font-variant-numeric:tabular-nums}
+.ball{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.88rem;flex-shrink:0;color:#fff}
+.ball-n,.ball-d{background:#bbb}
+.ball-s{background:#fff;border:2.5px solid #b8962e;color:#b8962e;font-weight:800}
+.ball-d{font-size:.94rem}
+.plus{color:#ddd;margin:0 .1rem;font-size:.85rem}
+footer{text-align:center;padding:2.5rem 1.5rem;color:#bbb;font-size:.72rem;letter-spacing:.02em;line-height:2;margin-top:.5rem}
 """
 
 _HTML = """\
@@ -89,19 +88,21 @@ def _combo_row(
 
 def _card(pred: LotteryPrediction) -> str:
     accent = _ACCENT.get(pred.lottery_type, "#6366f1")
-    badge = "badge-ml" if pred.method == "ML" else "badge-freq"
+    badge_text = pred.method
     is_digit = pred.lottery_type in ("3d", "4d")
     rows = "\n    ".join(
         _combo_row(c, pred.special, i + 1, is_digit, accent)
         for i, c in enumerate(pred.combos)
     )
     return (
-        f'<div class="card" style="border-left-color:{accent}">\n'
-        f'  <div class="card-header">'
-        f'<span class="card-title">{pred.name}</span>'
-        f'<span class="badge {badge}">{pred.method}</span>'
+        f'<div class="card">\n'
+        f'  <div class="card-band" style="background:{accent}">'
+        f'<span class="card-band-title">{pred.name}</span>'
+        f'<span class="card-band-badge">{badge_text}</span>'
         f'</div>\n'
-        f"  {rows}\n"
+        f'  <div class="card-body">\n'
+        f"    {rows}\n"
+        f"  </div>\n"
         f"</div>"
     )
 
