@@ -1,7 +1,11 @@
 # scraper/scraper.py
 import time
+import warnings
 import requests
 from datetime import date
+from urllib3.exceptions import InsecureRequestWarning
+
+warnings.filterwarnings("ignore", category=InsecureRequestWarning)
 
 API_BASE = "https://api.taiwanlottery.com/TLCAPIWeB/Lottery"
 HEADERS = {"Accept": "application/json", "User-Agent": "Mozilla/5.0"}
@@ -101,6 +105,7 @@ def _fetch_month(month_str: str, cfg: dict, lottery_type: str) -> list[tuple[str
                 },
                 headers=HEADERS,
                 timeout=10,
+                verify=False,  # Taiwan Lottery API cert missing SKI extension
             )
             response.raise_for_status()
             data = response.json().get("content", {})
