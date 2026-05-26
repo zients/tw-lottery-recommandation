@@ -116,13 +116,11 @@ def write_report(
     predictions: list[LotteryPrediction],
     output_dir: Path,
     report_date: str | None = None,
-) -> tuple[Path, Path]:
+) -> Path:
     if report_date is None:
         report_date = date.today().isoformat()
     output_dir.mkdir(parents=True, exist_ok=True)
     html = generate_html(predictions, report_date)
-    dated = output_dir / f"{report_date}.html"
     index = output_dir / "index.html"
-    dated.write_text(html, encoding="utf-8")
     index.write_text(html, encoding="utf-8")
-    return dated, index
+    return index
