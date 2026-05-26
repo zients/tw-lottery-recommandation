@@ -59,8 +59,8 @@ def _predict(lottery_type: str) -> LotteryPrediction:
 def main() -> None:
     init_db(DB_PATH)
     predictions = [_predict(t) for t in LOTTERY_NAMES]
-    dated, index = write_report(predictions, OUTPUT_DIR)
-    print(f"Written: {dated.name}, {index.name}")
+    index = write_report(predictions, OUTPUT_DIR)
+    print(f"Written: {index.name}")
 
 
 if __name__ == "__main__":

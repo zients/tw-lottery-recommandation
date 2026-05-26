@@ -77,23 +77,17 @@ def test_generate_html_is_valid_html():
     assert "</html>" in html
 
 
-def test_write_report_creates_both_files(tmp_path):
-    dated, index = write_report([_pred539()], tmp_path, "2026-05-25")
-    assert dated == tmp_path / "2026-05-25.html"
+def test_write_report_creates_index(tmp_path):
+    index = write_report([_pred539()], tmp_path, "2026-05-25")
     assert index == tmp_path / "index.html"
-    assert dated.exists()
     assert index.exists()
-
-
-def test_write_report_same_content(tmp_path):
-    dated, index = write_report([_pred539()], tmp_path, "2026-05-25")
-    assert dated.read_text() == index.read_text()
 
 
 def test_write_report_defaults_to_today(tmp_path):
     from datetime import date
-    dated, _ = write_report([_pred539()], tmp_path)
-    assert date.today().isoformat() in dated.name
+    index = write_report([_pred539()], tmp_path)
+    assert index.name == "index.html"
+    assert index.exists()
 
 
 def test_write_report_creates_output_dir(tmp_path):
@@ -104,7 +98,7 @@ def test_write_report_creates_output_dir(tmp_path):
 
 def test_write_report_multiple_lottery_types(tmp_path):
     preds = [_pred539(), _pred638(), _pred3d()]
-    _, index = write_report(preds, tmp_path, "2026-05-25")
+    index = write_report(preds, tmp_path, "2026-05-25")
     html = index.read_text()
     assert "今彩539" in html
     assert "威力彩" in html
