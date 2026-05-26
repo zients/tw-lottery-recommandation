@@ -1,6 +1,6 @@
 [project]
 name = "tw-lottery-recommandation"
-version = "1.0.1"
+version = "1.0.2"
 description = "台灣彩券開獎資料分析與號碼推薦工具"
 readme = "README.md"
 requires-python = ">=3.14"
