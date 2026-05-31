@@ -34,3 +34,5 @@ docs/
 # Claude
 CLAUDE.md
 ml/checkpoints/
+
+.superpowers/
