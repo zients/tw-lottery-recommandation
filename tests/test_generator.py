@@ -87,6 +87,12 @@ def test_generate_html_applies_lottery_accent():
     assert "--c:#2ee6a6" in html  # 539 neon accent driven via CSS var
 
 
+def test_generate_html_has_inline_favicon():
+    html = generate_html([_pred539()], "2026-05-25")
+    # inline data-URI favicon → no external request, no /favicon.ico 404
+    assert '<link rel="icon" href="data:image/svg+xml,' in html
+
+
 def test_write_report_creates_index(tmp_path):
     index = write_report([_pred539()], tmp_path, "2026-05-25")
     assert index == tmp_path / "index.html"
