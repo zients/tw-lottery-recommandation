@@ -1,6 +1,22 @@
 from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
+from urllib.parse import quote
+
+# Inline SVG favicon (a neon ball on a dark tile) embedded as a data URI so the
+# report stays a single self-contained file with zero external requests.
+_FAVICON_SVG = (
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">'
+    '<defs><radialGradient id="g" cx="38%" cy="32%" r="75%">'
+    '<stop offset="0" stop-color="#9ec5ff"/>'
+    '<stop offset=".55" stop-color="#3aa0ff"/>'
+    '<stop offset="1" stop-color="#7b5cff"/>'
+    "</radialGradient></defs>"
+    '<rect width="32" height="32" rx="7" fill="#070a14"/>'
+    '<circle cx="16" cy="16" r="9" fill="url(#g)"/>'
+    "</svg>"
+)
+_FAVICON = "data:image/svg+xml," + quote(_FAVICON_SVG)
 
 # Neon accent per lottery type. Drives the whole card via the CSS var --c:
 # top glow line, name dot, badge border, and number-ball gradient/glow.
@@ -52,6 +68,7 @@ _HTML = """\
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="{favicon}">
 <title>台灣彩券 AI 預測 {date}</title>
 <style>{css}</style>
 </head>
@@ -120,7 +137,7 @@ def _card(pred: LotteryPrediction) -> str:
 
 def generate_html(predictions: list[LotteryPrediction], report_date: str) -> str:
     cards = "\n".join(_card(p) for p in predictions)
-    return _HTML.format(date=report_date, css=_CSS, cards=cards)
+    return _HTML.format(date=report_date, css=_CSS, cards=cards, favicon=_FAVICON)
 
 
 def write_report(
