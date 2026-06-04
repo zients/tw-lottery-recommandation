@@ -1,4 +1,4 @@
-# tw-lottery-recommandation
+# TW Lottery Recommandation
 
 Taiwan lottery draw analyzer & number recommender with a Transformer ML model. Supports multiple lottery types.
 
