@@ -1,4 +1,4 @@
-# TW Lottery Recommandation
+# TW Lottery Recommendation
 
 Taiwan lottery draw analyzer & number recommender with a Transformer ML model. Supports multiple lottery types.
 
@@ -6,7 +6,7 @@ Data source: [Taiwan Lottery official API](https://api.taiwanlottery.com)
 
 ## Daily Prediction Website
 
-**https://zients.github.io/tw-lottery-recommandation/**
+**https://zients.github.io/tw-lottery-recommendation/**
 
 A GitHub Pages static site updated daily at 23:00 TST via GitHub Actions. Each day the workflow:
 

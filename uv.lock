@@ -556,7 +556,7 @@ wheels = [
 ]
 
 [[package]]
-name = "tw-lottery-recommandation"
+name = "tw-lottery-recommendation"
 version = "1.0.4"
 source = { editable = "." }
 dependencies = [
