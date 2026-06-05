@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/zients/tw-lottery-recommendation/actions/workflows/test.yml/badge.svg)](https://github.com/zients/tw-lottery-recommendation/actions/workflows/test.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Python](https://img.shields.io/badge/python-3.14+-blue.svg)](pyproject.toml)
+[![Python](https://img.shields.io/badge/python-3.12+-blue.svg)](pyproject.toml)
 
 Taiwan lottery draw analyzer & number recommender with a Transformer ML model. Supports multiple lottery types.
 
