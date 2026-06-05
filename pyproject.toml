@@ -5,6 +5,8 @@ description = "Taiwan lottery draw analyzer and number recommender with a Transf
 readme = "README.md"
 requires-python = ">=3.14"
 license = { text = "MIT" }
+authors = [{ name = "Zients" }]
+keywords = ["lottery", "taiwan", "transformer", "machine-learning", "pytorch"]
 dependencies = [
     "numpy>=2.4.4",
     "requests>=2.33.1",
@@ -16,6 +18,11 @@ dependencies = [
 dev = [
     "pytest>=9.0.3",
 ]
+
+[project.urls]
+Homepage = "https://zients.github.io/tw-lottery-recommendation/"
+Repository = "https://github.com/zients/tw-lottery-recommendation"
+Issues = "https://github.com/zients/tw-lottery-recommendation/issues"
 
 [project.scripts]
 lottery = "cli:main"

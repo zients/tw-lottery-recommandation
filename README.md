@@ -1,8 +1,18 @@
 # TW Lottery Recommendation
 
+[![CI](https://github.com/zients/tw-lottery-recommendation/actions/workflows/test.yml/badge.svg)](https://github.com/zients/tw-lottery-recommendation/actions/workflows/test.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.14+-blue.svg)](pyproject.toml)
+
 Taiwan lottery draw analyzer & number recommender with a Transformer ML model. Supports multiple lottery types.
 
 Data source: [Taiwan Lottery official API](https://api.taiwanlottery.com)
+
+## ⚠️ Disclaimer
+
+This project is for **educational, research, and entertainment purposes only**. Lottery draws are inherently random; the machine-learning model **cannot and does not predict winning numbers**, and no result is guaranteed. Please gamble responsibly and within your means.
+
+This project is **not affiliated with, endorsed by, or connected to the Taiwan Lottery Co., Ltd.** in any way. Data is retrieved from its publicly available API. The authors accept no liability for any loss arising from use of this software.
 
 ## Daily Prediction Website
 
